@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import pytz
 
 url = 'https://docs.google.com/spreadsheets/d/18UwwEd1tA7Ww9rzaKn1kLVsBWudRg_qalZwDsPaXM-k/export?format=csv&gid=540793946'
 DATE_COLUMN = 'Tanggal Penyerahan'
@@ -25,7 +26,7 @@ title.title('Monitoring Pembayaran Honor Penunjuk Jalan: ' + str("%.2f" % (len(d
 
 st.write(str(len(df)) + " dari 478 SLS")
 
-data_load_state.text('Last Updated: ' + str(datetime.now().strftime("%d-%m-%Y %H:%M:%M")))
+data_load_state.text('Last Updated: ' + str(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M:%M")) + "WIB")
 
 OPTION = st.selectbox('Pilih Kecamatan', ["SEMUA KECAMATAN", "DEMPO SELATAN", "DEMPO TENGAH", "DEMPO UTARA", "PAGAR ALAM SELATAN", "PAGAR ALAM UTARA"])
 
