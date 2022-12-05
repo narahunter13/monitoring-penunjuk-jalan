@@ -19,7 +19,9 @@ title = st.title('Monitoring Pembayaran Honor Penunjuk Jalan: ...')
 data_load_state = st.text('Loading data...')
 
 df = load_data(url)
-title.title('Monitoring Pembayaran Honor Penunjuk Jalan: ' + str("%.2f" % (len(df)/478 * 100)) + "%")
+title.title('Monitoring Pembayaran Honor Penunjuk Jalan: ' + str("%.2f" % (len(df)/478 * 100)) + "% ")
+
+st.write(str(len(df)) + " dari 478 SLS")
 
 data_load_state.text('Last Updated: ' + str(datetime.now().strftime("%d-%m-%Y %H:%M:%M")))
 
