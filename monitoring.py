@@ -10,6 +10,8 @@ def load_data(csv):
     data["Tanggal Penyerahan"] = pd.to_datetime(data["Tanggal Penyerahan"], format="%m/%d/%Y")
     data["Tanggal Penyerahan"] = data["Tanggal Penyerahan"].dt.strftime("%d-%m-%Y")
     data["Kecamatan"] = data["Kecamatan"].str.upper()
+    data["Kelurahan"] = data["Kelurahan"].str.upper()
+    data["Nama Lengkap Penunjuk Jalan"] = data["Nama Lengkap Penunjuk Jalan"].str.upper()
     data.index = data.index + 1
     return data
 
