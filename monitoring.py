@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import pytz
+import matplotlib.pyplot as plt
 
 url = 'https://docs.google.com/spreadsheets/d/18UwwEd1tA7Ww9rzaKn1kLVsBWudRg_qalZwDsPaXM-k/export?format=csv&gid=540793946'
 DATE_COLUMN = 'Tanggal Penyerahan'
@@ -18,6 +19,24 @@ def load_data(csv):
     data.index = data.index + 1
     return data
 
+def build_pie(df_, kec):
+    df_ = df_.astype({
+        'Kecamatan':'string',
+        'Jumlah SLS':'int64',
+        'Realisasi':'int64'
+    })
+    df_ = df_[df_["Kecamatan"] == kec]
+    df = pd.DataFrame({
+        'STATUS': ["SUDAH DISERAHKAN", "BELUM DISERAHKAN"],
+        'JUMLAH': [0, 0]
+    })
+    df.iloc[0, 1] = df_.iloc[0, 2]
+    df.iloc[1, 1] = df_.iloc[0, 1] - df.iloc[0, 1]
+    fig, ax = plt.subplots(figsize=(6,6))
+    ax.pie(x = df["JUMLAH"], labels=df["STATUS"], colors=['#06D6A0', '#EF476F'], autopct='%.2f%%')
+    ax.set_title(kec)
+    ax.axis('equal')
+    return fig
 
 title = st.title('Monitoring Pembayaran Honor Penunjuk Jalan: ...')
 
@@ -48,6 +67,11 @@ df_kecamatan['Realisasi'] = df_kecamatan['Realisasi'].astype('int64')
 st.title('Realisasi Per Kecamatan')
 st.dataframe(df_kecamatan)
 
+st.pyplot(build_pie(df_kecamatan, "DEMPO SELATAN"))
+st.pyplot(build_pie(df_kecamatan, "DEMPO TENGAH"))
+st.pyplot(build_pie(df_kecamatan, "DEMPO UTARA"))
+st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM SELATAN"))
+st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM UTARA"))
 
 df_kelurahan = df
 df_kelurahan["Realisasi"] = df.groupby(['Kecamatan', 'Kelurahan'])["Kelurahan"].transform('count')
