@@ -64,7 +64,7 @@ df_kecamatan["Progres"] = df_kecamatan["Progres"].map('{:,.2f}%'.format)
 df_kecamatan['Realisasi'] = df_kecamatan['Realisasi'].astype('int64')
 
 st.title('Realisasi Per Kecamatan')
-st.dataframe(df_kecamatan.sort_values(['Kecamatan', 'Kelurahan']))
+st.dataframe(df_kecamatan.sort_values(['Kecamatan']))
 
 st.pyplot(build_pie(df_kecamatan, "DEMPO SELATAN"))
 st.pyplot(build_pie(df_kecamatan, "DEMPO TENGAH"))
