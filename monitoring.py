@@ -86,4 +86,4 @@ df_kelurahan = df_kelurahan.loc[:, ["Kecamatan", "Kelurahan", "Jumlah SLS", "Rea
 
 st.title('Realisasi Per Kelurahan')
 KECAMATAN_SELECT = st.selectbox('Pilih', ["SEMUA KECAMATAN", "DEMPO SELATAN", "DEMPO TENGAH", "DEMPO UTARA", "PAGAR ALAM SELATAN", "PAGAR ALAM UTARA"])
-st.dataframe(df_kelurahan[df_kelurahan["Kecamatan"] == KECAMATAN_SELECT].sort_values(['Kecamatan', 'Kelurahan']) if (KECAMATAN_SELECT != "SEMUA KECAMATAN") else df_kelurahan.sort_values(['Kecamatan', 'Kelurahan', 'SLS']))
+st.dataframe(df_kelurahan[df_kelurahan["Kecamatan"] == KECAMATAN_SELECT].sort_values(['Kecamatan']) if (KECAMATAN_SELECT != "SEMUA KECAMATAN") else df_kelurahan.sort_values(['Kecamatan', 'Kelurahan', 'SLS']))
