@@ -35,7 +35,6 @@ def build_pie(df_, kec):
     fig, ax = plt.subplots(figsize=(6,6))
     ax.pie(x = df["JUMLAH"], labels=df["STATUS"], colors=['#06D6A0', '#EF476F'], autopct='%.2f%%')
     ax.set_title(kec)
-    ax.axis('equal')
     return fig
 
 title = st.title('Monitoring Pembayaran Honor Penunjuk Jalan: ...')
@@ -47,11 +46,11 @@ title.title('Monitoring Pembayaran Honor Penunjuk Jalan: ' + str("%.2f" % (len(d
 
 st.write(str(len(df)) + " dari 478 SLS")
 
-data_load_state.text('Last Updated: ' + str(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M:%M")) + "WIB")
+data_load_state.text('Last Updated: ' + str(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M:%M")) + " WIB")
 
 OPTION = st.selectbox('Pilih Kecamatan', ["SEMUA KECAMATAN", "DEMPO SELATAN", "DEMPO TENGAH", "DEMPO UTARA", "PAGAR ALAM SELATAN", "PAGAR ALAM UTARA"])
 
-st.dataframe(df[df["Kecamatan"] == OPTION] if (OPTION != "SEMUA KECAMATAN") else df.sort_values('Kecamatan'))
+st.dataframe(df[df["Kecamatan"] == OPTION].sort_values(['Kecamatan', 'Kelurahan', 'SLS']) if (OPTION != "SEMUA KECAMATAN") else df.sort_values(['Kecamatan', 'Kelurahan', 'SLS']))
 
 df_kecamatan = df
 df_kecamatan["Realisasi"] = df.groupby('Kecamatan')["Kecamatan"].transform('count').astype('int64')
@@ -65,7 +64,7 @@ df_kecamatan["Progres"] = df_kecamatan["Progres"].map('{:,.2f}%'.format)
 df_kecamatan['Realisasi'] = df_kecamatan['Realisasi'].astype('int64')
 
 st.title('Realisasi Per Kecamatan')
-st.dataframe(df_kecamatan)
+st.dataframe(df_kecamatan.sort_values(['Kecamatan', 'Kelurahan', 'SLS']))
 
 st.pyplot(build_pie(df_kecamatan, "DEMPO SELATAN"))
 st.pyplot(build_pie(df_kecamatan, "DEMPO TENGAH"))
@@ -87,4 +86,4 @@ df_kelurahan = df_kelurahan.loc[:, ["Kecamatan", "Kelurahan", "Jumlah SLS", "Rea
 
 st.title('Realisasi Per Kelurahan')
 KECAMATAN_SELECT = st.selectbox('Pilih', ["SEMUA KECAMATAN", "DEMPO SELATAN", "DEMPO TENGAH", "DEMPO UTARA", "PAGAR ALAM SELATAN", "PAGAR ALAM UTARA"])
-st.dataframe(df_kelurahan[df_kelurahan["Kecamatan"] == KECAMATAN_SELECT] if (KECAMATAN_SELECT != "SEMUA KECAMATAN") else df_kelurahan.sort_values('Kecamatan'))
+st.dataframe(df_kelurahan[df_kelurahan["Kecamatan"] == KECAMATAN_SELECT].sort_values(['Kecamatan', 'Kelurahan', 'SLS']) if (KECAMATAN_SELECT != "SEMUA KECAMATAN") else df_kelurahan.sort_values(['Kecamatan', 'Kelurahan', 'SLS']))
