@@ -32,7 +32,7 @@ def build_pie(df_, kec):
     })
     df.iloc[0, 1] = df_.iloc[0, 2]
     df.iloc[1, 1] = df_.iloc[0, 1] - df.iloc[0, 1]
-    fig, ax = plt.subplots(figsize=(6,6))
+    fig, ax = plt.subplots()
     ax.pie(x = df["JUMLAH"], labels=df["STATUS"], colors=['#06D6A0', '#EF476F'], autopct='%.2f%%')
     ax.set_title(kec)
     return fig
