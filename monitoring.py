@@ -66,11 +66,11 @@ df_kecamatan['Realisasi'] = df_kecamatan['Realisasi'].astype('int64')
 st.title('Realisasi Per Kecamatan')
 st.dataframe(df_kecamatan.sort_values(['Kecamatan']))
 
-st.pyplot(build_pie(df_kecamatan, "DEMPO SELATAN"))
-st.pyplot(build_pie(df_kecamatan, "DEMPO TENGAH"))
-st.pyplot(build_pie(df_kecamatan, "DEMPO UTARA"))
-st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM SELATAN"))
-st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM UTARA"))
+# st.pyplot(build_pie(df_kecamatan, "DEMPO SELATAN"))
+# st.pyplot(build_pie(df_kecamatan, "DEMPO TENGAH"))
+# st.pyplot(build_pie(df_kecamatan, "DEMPO UTARA"))
+# st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM SELATAN"))
+# st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM UTARA"))
 
 df_kelurahan = df
 df_kelurahan["Realisasi"] = df.groupby(['Kecamatan', 'Kelurahan'])["Kelurahan"].transform('count')
