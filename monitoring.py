@@ -5,85 +5,139 @@ from datetime import datetime
 import pytz
 import matplotlib.pyplot as plt
 
-url = 'https://docs.google.com/spreadsheets/d/18UwwEd1tA7Ww9rzaKn1kLVsBWudRg_qalZwDsPaXM-k/export?format=csv&gid=540793946'
-DATE_COLUMN = 'Tanggal Penyerahan'
-db_kecamatan = pd.read_csv('db_kecamatan.csv', sep=";")
-db_kelurahan = pd.read_csv('db_kelurahan.csv', sep=";")
-def load_data(csv):
-    data = pd.read_csv(csv).loc[:, ["Kecamatan", "Kelurahan", "SLS", "Nama Lengkap Penunjuk Jalan", "Tanggal Penyerahan"]]
-    data["Tanggal Penyerahan"] = pd.to_datetime(data["Tanggal Penyerahan"], format="%m/%d/%Y")
-    data["Tanggal Penyerahan"] = data["Tanggal Penyerahan"].dt.strftime("%d-%m-%Y")
-    data["Kecamatan"] = data["Kecamatan"].str.upper()
-    data["Kelurahan"] = data["Kelurahan"].str.upper()
-    data["Nama Lengkap Penunjuk Jalan"] = data["Nama Lengkap Penunjuk Jalan"].str.upper()
-    data.index = data.index + 1
-    return data
 
-def build_pie(df_, kec):
-    df_ = df_.astype({
-        'Kecamatan':'string',
-        'Jumlah SLS':'int64',
-        'Realisasi':'int64'
-    })
-    df_ = df_[df_["Kecamatan"] == kec]
-    df = pd.DataFrame({
-        'STATUS': ["SUDAH DISERAHKAN", "BELUM DISERAHKAN"],
-        'JUMLAH': [0, 0]
-    })
-    df.iloc[0, 1] = df_.iloc[0, 2]
-    df.iloc[1, 1] = df_.iloc[0, 1] - df.iloc[0, 1]
-    fig, ax = plt.subplots(figsize=(6,6))
-    ax.pie(x = df["JUMLAH"], labels=df["STATUS"], colors=['#06D6A0', '#EF476F'], autopct='%.2f%%')
-    ax.set_title(kec)
-    return fig
-
-title = st.title('Monitoring Pembayaran Honor Penunjuk Jalan: ...')
+title = st.title('Monitoring Perbaikan Anomali Regsosek')
 
 data_load_state = st.text('Loading data...')
 
-df = load_data(url)
-title.title('Monitoring Pembayaran Honor Penunjuk Jalan: ' + str("%.2f" % (len(df)/478 * 100)) + "% ")
+anomali_1 = pd.read_csv("https://docs.google.com/spreadsheets/d/1JmDNVhlWL_Coj9hdKEzskY2Kz4wh_H5S5fmcZV4VVls/export?format=csv&gid=1210863346", sep=",")
+anomali_2 = pd.read_csv("https://docs.google.com/spreadsheets/d/1YDZllbeRAA3cwQ_qHUMqFAdZOsnHqO4Bhjq5aZtb9A0/export?format=csv&gid=314362263", sep=",")
+anomali_3 = pd.read_csv("https://docs.google.com/spreadsheets/d/1gWCbq2ruMLHKYZIfO8-x_19AJRqa-os5WgTmDFd3A0Q/export?format=csv&gid=568120335", sep=",")
+anomali_4 = pd.read_csv("https://docs.google.com/spreadsheets/d/1ceai_7M5czkm2M8VouniZBaOBraHHj0pOVugm-NSwYs/export?format=csv&gid=1148218461", sep=",")
+anomali_5 = pd.read_csv("https://docs.google.com/spreadsheets/d/11vl7VUScgiPO5vuFh4PcdPaRDy3LlKuT8b7e-1WpvHE/export?format=csv&gid=1353683748", sep=",")
+anomali_6 = pd.read_csv("https://docs.google.com/spreadsheets/d/1E0y6-XYDA2DF7JHjKqc3Mk4VMO56ezQf0WYXyO2AU0s/export?format=csv&gid=1267789551", sep=",")
+anomali_7 = pd.read_csv("https://docs.google.com/spreadsheets/d/1VzVhxv_jISRWTl9s-Qc6pfacE8NBwIJlHTD6U5EZKFQ/export?format=csv&gid=190110879", sep=",")
+anomali_8 = pd.read_csv("https://docs.google.com/spreadsheets/d/1csZ6099a2Pmrjm95JCV35lEbkgl0vwvkq4ViURs9Rs8/export?format=csv&gid=88446257", sep=",")
+anomali_9 = pd.read_csv("https://docs.google.com/spreadsheets/d/1Gbiuj2k_g5629CSlNPjNje3EqbcyXM67E9y1i2mQgLY/export?format=csv&gid=1850787277", sep=",")
 
-st.write(str(len(df)) + " dari 478 SLS")
+data_load_state.text("Data pada " + str(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M:%M")) + " WIB")
 
-data_load_state.text('Last Updated: ' + str(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M:%M")) + " WIB")
+st.subheader("Dempo Selatan")
+ds_ = pd.DataFrame({
+    "Jenis Anomali":[],
+    "Sudah Dicek":[],
+    "Belum Dicek":[],
+    "Jumlah":[]
+})
+ds_ = ds_.astype({
+    "Jenis Anomali":'string',
+    "Sudah Dicek":'int32',
+    "Belum Dicek":'int32',
+    "Jumlah":'int32'
+})
+ds_.loc[len(ds_)] = ['Anomali 1', len(anomali_1.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 2', len(anomali_2.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 3', len(anomali_3.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 4', len(anomali_4.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 5', len(anomali_5.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 6', len(anomali_6.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 7', len(anomali_7.loc[lambda col: (col[' kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 8', len(anomali_8.loc[lambda col: (col[' kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 10)])]
+ds_.loc[len(ds_)] = ['Anomali 9', len(anomali_9.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == True) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 10) & (col['sudah dicek'] == False) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 10)])]
+st.write(ds_)
 
-OPTION = st.selectbox('Pilih Kecamatan', ["SEMUA KECAMATAN", "DEMPO SELATAN", "DEMPO TENGAH", "DEMPO UTARA", "PAGAR ALAM SELATAN", "PAGAR ALAM UTARA"])
+st.subheader("Dempo Tengah")
+dt_ = pd.DataFrame({
+    "Jenis Anomali":[],
+    "Sudah Dicek":[],
+    "Belum Dicek":[],
+    "Jumlah":[]
+})
+dt_ = dt_.astype({
+    "Jenis Anomali":'string',
+    "Sudah Dicek":'int32',
+    "Belum Dicek":'int32',
+    "Jumlah":'int32'
+})
+dt_.loc[len(dt_)] = ['Anomali 1', len(anomali_1.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 2', len(anomali_2.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 3', len(anomali_3.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 4', len(anomali_4.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 5', len(anomali_5.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 6', len(anomali_6.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 7', len(anomali_7.loc[lambda col: (col[' kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 8', len(anomali_8.loc[lambda col: (col[' kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 11)])]
+dt_.loc[len(dt_)] = ['Anomali 9', len(anomali_9.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == True) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 11) & (col['sudah dicek'] == False) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 11)])]
+st.write(dt_)
 
-st.dataframe(df[df["Kecamatan"] == OPTION].sort_values(['Kecamatan', 'Kelurahan', 'SLS']) if (OPTION != "SEMUA KECAMATAN") else df.sort_values(['Kecamatan', 'Kelurahan', 'SLS']))
+st.subheader("Dempo Utara")
+du_ = pd.DataFrame({
+    "Jenis Anomali":[],
+    "Sudah Dicek":[],
+    "Belum Dicek":[],
+    "Jumlah":[]
+})
+du_ = du_.astype({
+    "Jenis Anomali":'string',
+    "Sudah Dicek":'int32',
+    "Belum Dicek":'int32',
+    "Jumlah":'int32'
+})
+du_.loc[len(du_)] = ['Anomali 1', len(anomali_1.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 2', len(anomali_2.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 3', len(anomali_3.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 4', len(anomali_4.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 5', len(anomali_5.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 6', len(anomali_6.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 7', len(anomali_7.loc[lambda col: (col[' kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 8', len(anomali_8.loc[lambda col: (col[' kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 20)])]
+du_.loc[len(du_)] = ['Anomali 9', len(anomali_9.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == True) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 20) & (col['sudah dicek'] == False) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 20)])]
+st.write(du_)
 
-df_kecamatan = df
-df_kecamatan["Realisasi"] = df.groupby('Kecamatan')["Kecamatan"].transform('count').astype('int64')
-df_kecamatan = df_kecamatan.drop_duplicates('Kecamatan')
-df_kecamatan = df_kecamatan.loc[:, ["Kecamatan", "Realisasi"]]
+st.subheader("Pagar Alam Selatan")
+pas_ = pd.DataFrame({
+    "Jenis Anomali":[],
+    "Sudah Dicek":[],
+    "Belum Dicek":[],
+    "Jumlah":[]
+})
+pas_ = pas_.astype({
+    "Jenis Anomali":'string',
+    "Sudah Dicek":'int32',
+    "Belum Dicek":'int32',
+    "Jumlah":'int32'
+})
+pas_.loc[len(pas_)] = ['Anomali 1', len(anomali_1.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 2', len(anomali_2.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 3', len(anomali_3.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 4', len(anomali_4.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 5', len(anomali_5.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 6', len(anomali_6.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 7', len(anomali_7.loc[lambda col: (col[' kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 8', len(anomali_8.loc[lambda col: (col[' kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 30)])]
+pas_.loc[len(pas_)] = ['Anomali 9', len(anomali_9.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == True) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 30) & (col['sudah dicek'] == False) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 30)])]
+st.write(pas_)
 
-df_kecamatan = db_kecamatan.set_index('Kecamatan').join(df_kecamatan.set_index('Kecamatan')).reset_index(names='Kecamatan')
-df_kecamatan["Progres"] = df_kecamatan["Realisasi"]/df_kecamatan["Jumlah SLS"] * 100
-df_kecamatan = df_kecamatan.fillna(0)
-df_kecamatan["Progres"] = df_kecamatan["Progres"].map('{:,.2f}%'.format)
-df_kecamatan['Realisasi'] = df_kecamatan['Realisasi'].astype('int64')
-
-st.title('Realisasi Per Kecamatan')
-st.dataframe(df_kecamatan.sort_values(['Kecamatan']))
-
-st.pyplot(build_pie(df_kecamatan, "DEMPO SELATAN"))
-st.pyplot(build_pie(df_kecamatan, "DEMPO TENGAH"))
-st.pyplot(build_pie(df_kecamatan, "DEMPO UTARA"))
-st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM SELATAN"))
-st.pyplot(build_pie(df_kecamatan, "PAGAR ALAM UTARA"))
-
-df_kelurahan = df
-df_kelurahan["Realisasi"] = df.groupby(['Kecamatan', 'Kelurahan'])["Kelurahan"].transform('count')
-df_kelurahan = df_kelurahan.drop_duplicates('Kelurahan')
-df_kelurahan = df_kelurahan.loc[:, ["Kelurahan", "Realisasi"]]
-
-df_kelurahan = db_kelurahan.set_index('Kelurahan').join(df_kelurahan.set_index('Kelurahan')).reset_index(names='Kelurahan')
-df_kelurahan = df_kelurahan.fillna(0)
-df_kelurahan["Progres"] = df_kelurahan["Realisasi"]/df_kelurahan["Jumlah SLS"] * 100
-df_kelurahan["Progres"] = df_kelurahan["Progres"].map('{:,.2f}%'.format)
-df_kelurahan['Realisasi'] = df_kelurahan['Realisasi'].astype('int64')
-df_kelurahan = df_kelurahan.loc[:, ["Kecamatan", "Kelurahan", "Jumlah SLS", "Realisasi", "Progres"]]
-
-st.title('Realisasi Per Kelurahan')
-KECAMATAN_SELECT = st.selectbox('Pilih', ["SEMUA KECAMATAN", "DEMPO SELATAN", "DEMPO TENGAH", "DEMPO UTARA", "PAGAR ALAM SELATAN", "PAGAR ALAM UTARA"])
-st.dataframe(df_kelurahan[df_kelurahan["Kecamatan"] == KECAMATAN_SELECT] if (KECAMATAN_SELECT != "SEMUA KECAMATAN") else df_kelurahan.sort_values(['Kecamatan', 'Kelurahan']))
+st.subheader("Pagar Alam Utara")
+pau_ = pd.DataFrame({
+    "Jenis Anomali":[],
+    "Sudah Dicek":[],
+    "Belum Dicek":[],
+    "Jumlah":[]
+})
+pau_ = pau_.astype({
+    "Jenis Anomali":'string',
+    "Sudah Dicek":'int32',
+    "Belum Dicek":'int32',
+    "Jumlah":'int32'
+})
+pau_.loc[len(pau_)] = ['Anomali 1', len(anomali_1.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_1.loc[lambda col: (col['kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 2', len(anomali_2.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_2.loc[lambda col: (col['kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 3', len(anomali_3.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_3.loc[lambda col: (col['kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 4', len(anomali_4.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_4.loc[lambda col: (col['kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 5', len(anomali_5.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_5.loc[lambda col: (col['kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 6', len(anomali_6.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_6.loc[lambda col: (col['kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 7', len(anomali_7.loc[lambda col: (col[' kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_7.loc[lambda col: (col[' kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 8', len(anomali_8.loc[lambda col: (col[' kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_8.loc[lambda col: (col[' kode_kec'] == 40)])]
+pau_.loc[len(pau_)] = ['Anomali 9', len(anomali_9.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == True) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 40) & (col['sudah dicek'] == False) ]), len(anomali_9.loc[lambda col: (col['kode_kec'] == 40)])]
+st.write(pau_)
